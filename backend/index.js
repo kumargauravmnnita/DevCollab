@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const http = require("http");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 connectDB();
@@ -24,6 +25,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({ message: "DevCollab API is running" });
 });
+
+app.use("/api/auth", authRoutes);
 
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
