@@ -25,14 +25,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary-400">DevCollab</h1>
-          <p className="text-slate-400 mt-2">Sign in to your account</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary-400">
+            DevCollab
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm sm:text-base">
+            Sign in to your account
+          </p>
         </div>
 
-        <div className="bg-slate-800 rounded-xl p-8 border border-slate-700">
+        <div className="bg-slate-800 rounded-xl p-6 sm:p-8 border border-slate-700 shadow-xl">
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
               {error}
@@ -50,7 +54,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full bg-slate-900 border border-slate-600 text-slate-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 transition placeholder-slate-500"
+                className="w-full bg-slate-900 border border-slate-600 text-slate-100 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:border-primary-500 transition placeholder-slate-500"
               />
             </div>
 
@@ -64,14 +68,14 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full bg-slate-900 border border-slate-600 text-slate-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 transition placeholder-slate-500"
+                className="w-full bg-slate-900 border border-slate-600 text-slate-100 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:border-primary-500 transition placeholder-slate-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-lg transition"
+              className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-lg transition text-sm sm:text-base"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
