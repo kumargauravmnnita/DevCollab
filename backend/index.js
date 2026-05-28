@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 dotenv.config();
 connectDB();
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/ai", aiRoutes);
 
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
