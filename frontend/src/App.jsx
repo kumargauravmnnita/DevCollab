@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ProjectBoard from "./pages/ProjectBoard";
+import CodeEditor from "./pages/CodeEditor";
 import PrivateRoute from "./components/PrivateRoute";
 
 function Home() {
@@ -86,6 +87,22 @@ export default function App() {
         element={
           <PrivateRoute>
             <ProjectBoard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/editor"
+        element={
+          <PrivateRoute>
+            <CodeEditor />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/editor/:id"
+        element={
+          <PrivateRoute>
+            <CodeEditor />
           </PrivateRoute>
         }
       />
