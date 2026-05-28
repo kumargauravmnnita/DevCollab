@@ -1,8 +1,9 @@
-import { Routes, Route, Navigate, Link } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ProjectBoard from "./pages/ProjectBoard";
 import PrivateRoute from "./components/PrivateRoute";
 
 function Home() {
@@ -19,20 +20,19 @@ function Home() {
           Real-time collaborative development platform with AI-powered tools
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            to="/register"
+          <a
+            href="/register"
             className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-medium transition text-sm sm:text-base"
           >
             Get Started
-          </Link>
-          <Link
-            to="/login"
+          </a>
+          <a
+            href="/login"
             className="border border-slate-600 hover:border-slate-400 text-slate-300 px-8 py-3 rounded-lg font-medium transition text-sm sm:text-base"
           >
             Sign In
-          </Link>
+          </a>
         </div>
-
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
             <div className="text-2xl mb-2">⚡</div>
@@ -78,6 +78,14 @@ export default function App() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/project/:id"
+        element={
+          <PrivateRoute>
+            <ProjectBoard />
           </PrivateRoute>
         }
       />
