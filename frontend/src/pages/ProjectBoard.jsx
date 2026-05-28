@@ -158,13 +158,35 @@ const ProjectBoard = () => {
               Project Board
             </h1>
           </div>
-          <button
-            onClick={() => handleOpenModal("todo")}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 flex-shrink-0"
-          >
-            <span className="text-base leading-none">+</span>
-            <span>Add Task</span>
-          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/editor/${id}`)}
+              className="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                />
+              </svg>
+              <span className="hidden sm:inline">Editor</span>
+            </button>
+            <button
+              onClick={() => handleOpenModal("todo")}
+              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 flex-shrink-0"
+            >
+              <span className="text-base leading-none">+</span>
+              <span>Add Task</span>
+            </button>
+          </div>
         </div>
       </nav>
 
