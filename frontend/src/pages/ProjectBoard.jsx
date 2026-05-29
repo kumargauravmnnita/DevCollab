@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useTasks } from "../hooks/useTasks";
+import { useSocket } from "../hooks/useSocket";
 import { useAuth } from "../context/AuthContext";
 import CreateTaskModal from "../components/CreateTaskModal";
+import AITaskGenerator from "../components/AITaskGenerator";
 
 const COLUMNS = [
   { id: "todo", label: "To Do", color: "bg-slate-500" },
@@ -18,7 +20,7 @@ const PRIORITY_COLORS = {
   high: "bg-red-500/20 text-red-400",
 };
 
-const TaskCard = ({ task, index, onDelete, onUpdate }) => (
+const TaskCard = ({ task, index, onDelete }) => (
   <Draggable draggableId={task._id} index={index}>
     {(provided, snapshot) => (
       <div
@@ -26,7 +28,11 @@ const TaskCard = ({ task, index, onDelete, onUpdate }) => (
         {...provided.draggableProps}
         {...provided.dragHandleProps}
         className={`bg-slate-800 border rounded-lg p-3 mb-2 cursor-grab active:cursor-grabbing transition group
-          ${snapshot.isDragging ? "border-primary-500 shadow-lg shadow-primary-500/10 rotate-1" : "border-slate-700 hover:border-slate-500"}`}
+          ${
+            snapshot.isDragging
+              ? "border-primary-500 shadow-lg shadow-primary-500/10 rotate-1"
+              : "border-slate-700 hover:border-slate-500"
+          }`}
       >
         <div className="flex items-start justify-between gap-2">
           <p className="text-slate-200 text-sm font-medium leading-snug flex-1">
@@ -79,9 +85,12 @@ const ProjectBoard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const socketRef = useSocket();
   const { tasks, setTasks, loading, createTask, updateTask, deleteTask } =
-    useTasks(id);
+    useTasks(id, socketRef);
+
   const [showModal, setShowModal] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [activeColumn, setActiveColumn] = useState("todo");
 
   const getColumnTasks = (status) => tasks.filter((t) => t.status === status);
@@ -96,7 +105,6 @@ const ProjectBoard = () => {
       return;
 
     const newStatus = destination.droppableId;
-
     setTasks((prev) =>
       prev.map((t) =>
         t._id === draggableId ? { ...t, status: newStatus } : t,
@@ -114,13 +122,15 @@ const ProjectBoard = () => {
     }
   };
 
-  const handleCreateTask = async (title, description, priority) => {
-    await createTask(title, description, priority);
-  };
-
   const handleOpenModal = (columnId) => {
     setActiveColumn(columnId);
     setShowModal(true);
+  };
+
+  const handleAITasksGenerated = async (generatedTasks) => {
+    for (const task of generatedTasks) {
+      await createTask(task.title, task.description, task.priority);
+    }
   };
 
   if (loading) {
@@ -161,8 +171,15 @@ const ProjectBoard = () => {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setShowAIGenerator(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5"
+            >
+              <span>✨</span>
+              <span className="hidden sm:inline">AI Generate</span>
+            </button>
+            <button
               onClick={() => navigate(`/editor/${id}`)}
-              className="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5"
+              className="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5"
             >
               <svg
                 className="w-4 h-4"
@@ -181,10 +198,10 @@ const ProjectBoard = () => {
             </button>
             <button
               onClick={() => handleOpenModal("todo")}
-              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 flex-shrink-0"
+              className="bg-primary-600 hover:bg-primary-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5"
             >
               <span className="text-base leading-none">+</span>
-              <span>Add Task</span>
+              <span className="hidden sm:inline">Add Task</span>
             </button>
           </div>
         </div>
@@ -192,7 +209,7 @@ const ProjectBoard = () => {
 
       <div className="flex-1 overflow-x-auto p-4 sm:p-6">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-4 h-full min-w-max sm:min-w-0 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex gap-4 min-w-max sm:min-w-0 sm:grid sm:grid-cols-2 lg:grid-cols-4">
             {COLUMNS.map((col) => {
               const colTasks = getColumnTasks(col.id);
               return (
@@ -239,7 +256,9 @@ const ProjectBoard = () => {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex-1 p-2 min-h-32 transition-colors ${snapshot.isDraggingOver ? "bg-primary-500/5" : ""}`}
+                        className={`flex-1 p-2 min-h-32 transition-colors ${
+                          snapshot.isDraggingOver ? "bg-primary-500/5" : ""
+                        }`}
                       >
                         {colTasks.map((task, index) => (
                           <TaskCard
@@ -247,7 +266,6 @@ const ProjectBoard = () => {
                             task={task}
                             index={index}
                             onDelete={deleteTask}
-                            onUpdate={updateTask}
                           />
                         ))}
                         {provided.placeholder}
@@ -276,6 +294,13 @@ const ProjectBoard = () => {
             }
             setShowModal(false);
           }}
+        />
+      )}
+
+      {showAIGenerator && (
+        <AITaskGenerator
+          onClose={() => setShowAIGenerator(false)}
+          onTasksGenerated={handleAITasksGenerated}
         />
       )}
     </div>
