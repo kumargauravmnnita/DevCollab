@@ -1,5 +1,6 @@
 const Task = require("../models/Task");
 const Project = require("../models/Project");
+const Activity = require("../models/Activity");
 
 const isProjectMember = async (projectId, userId) => {
   const project = await Project.findById(projectId);
@@ -44,6 +45,13 @@ const createTask = async (req, res) => {
       assignee: req.user._id,
     });
 
+    await Activity.create({
+      project: projectId,
+      user: req.user._id,
+      action: `created task "${title}"`,
+      type: "task",
+    });
+
     res.status(201).json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -66,6 +74,16 @@ const updateTask = async (req, res) => {
     if (dueDate !== undefined) task.dueDate = dueDate;
 
     await task.save();
+
+    await Activity.create({
+      project: task.project,
+      user: req.user._id,
+      action: status
+        ? `moved "${task.title}" to ${status}`
+        : `updated "${task.title}"`,
+      type: "task",
+    });
+
     res.json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -79,6 +97,13 @@ const deleteTask = async (req, res) => {
 
     const allowed = await isProjectMember(task.project, req.user._id);
     if (!allowed) return res.status(403).json({ message: "Access denied" });
+
+    await Activity.create({
+      project: task.project,
+      user: req.user._id,
+      action: `deleted task "${task.title}"`,
+      type: "task",
+    });
 
     await task.deleteOne();
     res.json({ message: "Task deleted" });
