@@ -1,14 +1,30 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+let groqClient = null;
+
+const getGroq = () => {
+  if (!groqClient) {
+    groqClient = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+  }
+  return groqClient;
+};
+
+const callGroq = async (prompt) => {
+  const completion = await getGroq().chat.completions.create({
+    messages: [{ role: "user", content: prompt }],
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.7,
+    max_tokens: 2048,
+  });
+  return completion.choices[0].message.content;
+};
 
 const reviewCode = async (req, res) => {
   try {
     const { code, language } = req.body;
-
     if (!code) return res.status(400).json({ message: "Code is required" });
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are an expert code reviewer. Review the following ${language || "code"} and provide:
 1. A brief overall assessment (1-2 sentences)
@@ -23,12 +39,10 @@ Code to review:
 ${code}
 \`\`\``;
 
-    const result = await model.generateContent(prompt);
-    const review = result.response.text();
-
+    const review = await callGroq(prompt);
     res.json({ review });
   } catch (error) {
-    console.error("AI review error:", error);
+    console.error("AI review error:", error.message);
     res.status(500).json({ message: "AI review failed: " + error.message });
   }
 };
@@ -36,10 +50,7 @@ ${code}
 const explainCode = async (req, res) => {
   try {
     const { code, language } = req.body;
-
     if (!code) return res.status(400).json({ message: "Code is required" });
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Explain the following ${language || "code"} in simple terms that a beginner can understand.
 Be concise (max 5-6 sentences). Focus on what it does, not how every line works.
@@ -50,12 +61,10 @@ Code:
 ${code}
 \`\`\``;
 
-    const result = await model.generateContent(prompt);
-    const explanation = result.response.text();
-
+    const explanation = await callGroq(prompt);
     res.json({ explanation });
   } catch (error) {
-    console.error("AI explain error:", error);
+    console.error("AI explain error:", error.message);
     res
       .status(500)
       .json({ message: "AI explanation failed: " + error.message });
@@ -65,13 +74,10 @@ ${code}
 const generateTasks = async (req, res) => {
   try {
     const { projectDescription } = req.body;
-
     if (!projectDescription)
       return res
         .status(400)
         .json({ message: "Project description is required" });
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are a project manager. Based on this project description, generate exactly 8-10 development tasks.
 
@@ -83,9 +89,7 @@ Each task must have: title (string), description (string), priority ("low" | "me
 Example format:
 [{"title":"Setup project","description":"Initialize the repository","priority":"high","status":"todo"}]`;
 
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
-
+    let text = await callGroq(prompt);
     text = text
       .replace(/```json/g, "")
       .replace(/```/g, "")
@@ -94,7 +98,7 @@ Example format:
     const tasks = JSON.parse(text);
     res.json({ tasks });
   } catch (error) {
-    console.error("AI tasks error:", error);
+    console.error("AI tasks error:", error.message);
     res
       .status(500)
       .json({ message: "Task generation failed: " + error.message });

@@ -7,7 +7,8 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const aiRoutes = require("./routes/aiRoutes");
-
+dotenv.config();
+console.log("ENV TEST:", process.env.GROQ_API_KEY);
 dotenv.config();
 connectDB();
 
