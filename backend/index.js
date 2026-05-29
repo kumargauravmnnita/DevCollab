@@ -34,10 +34,35 @@ app.use("/api/ai", aiRoutes);
 
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
+
+  socket.on("join-project", (projectId) => {
+    socket.join(projectId);
+    console.log(`Socket ${socket.id} joined project ${projectId}`);
+  });
+
+  socket.on("leave-project", (projectId) => {
+    socket.leave(projectId);
+    console.log(`Socket ${socket.id} left project ${projectId}`);
+  });
+
+  socket.on("task-created", ({ projectId, task }) => {
+    socket.to(projectId).emit("task-created", task);
+  });
+
+  socket.on("task-updated", ({ projectId, task }) => {
+    socket.to(projectId).emit("task-updated", task);
+  });
+
+  socket.on("task-deleted", ({ projectId, taskId }) => {
+    socket.to(projectId).emit("task-deleted", taskId);
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 });
+
+app.set("io", io);
 
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
