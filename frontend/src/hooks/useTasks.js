@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 export const useTasks = (projectId, socketRef) => {
   const [tasks, setTasks] = useState([]);
@@ -8,7 +8,7 @@ export const useTasks = (projectId, socketRef) => {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/projects/${projectId}/tasks`);
+      const { data } = await api.get(`/api/projects/${projectId}/tasks`);
       setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
@@ -19,7 +19,7 @@ export const useTasks = (projectId, socketRef) => {
   };
 
   const createTask = async (title, description, priority) => {
-    const { data } = await axios.post(`/api/projects/${projectId}/tasks`, {
+    const { data } = await api.post(`/api/projects/${projectId}/tasks`, {
       title,
       description,
       priority,
@@ -32,7 +32,7 @@ export const useTasks = (projectId, socketRef) => {
   };
 
   const updateTask = async (taskId, updates) => {
-    const { data } = await axios.put(
+    const { data } = await api.put(
       `/api/projects/${projectId}/tasks/${taskId}`,
       updates,
     );
@@ -44,7 +44,7 @@ export const useTasks = (projectId, socketRef) => {
   };
 
   const deleteTask = async (taskId) => {
-    await axios.delete(`/api/projects/${projectId}/tasks/${taskId}`);
+    await api.delete(`/api/projects/${projectId}/tasks/${taskId}`);
     setTasks((prev) => prev.filter((t) => t._id !== taskId));
     if (socketRef?.current) {
       socketRef.current.emit("task-deleted", { projectId, taskId });

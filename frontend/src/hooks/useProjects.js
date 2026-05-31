@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 export const useProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -9,7 +9,7 @@ export const useProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("/api/projects");
+      const { data } = await api.get("/api/projects");
       setProjects(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch projects");
@@ -20,7 +20,7 @@ export const useProjects = () => {
   };
 
   const createProject = async (name, description, color) => {
-    const { data } = await axios.post("/api/projects", {
+    const { data } = await api.post("/api/projects", {
       name,
       description,
       color,
@@ -30,7 +30,7 @@ export const useProjects = () => {
   };
 
   const deleteProject = async (id) => {
-    await axios.delete(`/api/projects/${id}`);
+    await api.delete(`/api/projects/${id}`);
     setProjects((prev) => prev.filter((p) => p._id !== id));
   };
 
