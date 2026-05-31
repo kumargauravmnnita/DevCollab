@@ -1,0 +1,33 @@
+import { Toaster } from "react-hot-toast";
+
+const Toast = () => {
+  return (
+    <Toaster
+      position="bottom-right"
+      toastOptions={{
+        duration: 3000,
+        style: {
+          background: "#1e293b",
+          color: "#f1f5f9",
+          border: "1px solid #334155",
+          borderRadius: "10px",
+          fontSize: "14px",
+        },
+        success: {
+          iconTheme: {
+            primary: "#6366f1",
+            secondary: "#fff",
+          },
+        },
+        error: {
+          iconTheme: {
+            primary: "#ef4444",
+            secondary: "#fff",
+          },
+        },
+      }}
+    />
+  );
+};
+
+export default Toast;
