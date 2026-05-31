@@ -8,6 +8,7 @@ import CreateTaskModal from "../components/CreateTaskModal";
 import AITaskGenerator from "../components/AITaskGenerator";
 import MembersPanel from "../components/MembersPanel";
 import ActivityFeed from "../components/ActivityFeed";
+import toast from "react-hot-toast";
 
 const COLUMNS = [
   { id: "todo", label: "To Do", color: "bg-slate-500" },
@@ -105,6 +106,11 @@ const ProjectBoard = () => {
       destination.index === source.index
     )
       return;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
 
     const newStatus = destination.droppableId;
     setTasks((prev) =>
@@ -114,12 +120,16 @@ const ProjectBoard = () => {
     );
     try {
       await updateTask(draggableId, { status: newStatus });
+      toast.success(
+        `Moved to ${newStatus === "inprogress" ? "In Progress" : newStatus}`,
+      );
     } catch {
       setTasks((prev) =>
         prev.map((t) =>
           t._id === draggableId ? { ...t, status: source.droppableId } : t,
         ),
       );
+      toast.error("Failed to update task");
     }
   };
 
@@ -129,8 +139,18 @@ const ProjectBoard = () => {
   };
 
   const handleAITasksGenerated = async (generatedTasks) => {
-    for (const task of generatedTasks) {
-      await createTask(task.title, task.description, task.priority);
+    const loadingToast = toast.loading(
+      `Adding ${generatedTasks.length} tasks...`,
+    );
+    try {
+      for (const task of generatedTasks) {
+        await createTask(task.title, task.description, task.priority);
+      }
+      toast.dismiss(loadingToast);
+      toast.success(`${generatedTasks.length} tasks added to board!`);
+    } catch {
+      toast.dismiss(loadingToast);
+      toast.error("Failed to add some tasks");
     }
   };
 

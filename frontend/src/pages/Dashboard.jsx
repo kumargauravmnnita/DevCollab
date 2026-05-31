@@ -1,81 +1,38 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useProjects } from "../hooks/useProjects";
 import CreateProjectModal from "../components/CreateProjectModal";
+import Navbar from "../components/Navbar";
+import {
+  ProjectCardSkeleton,
+  DashboardStatSkeleton,
+} from "../components/Skeleton";
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { projects, loading, createProject, deleteProject } = useProjects();
   const [showModal, setShowModal] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleCreate = async (name, description, color) => {
+    await createProject(name, description, color);
+    toast.success("Project created!");
   };
+
+  const handleDelete = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this project?")) return;
+    await deleteProject(id);
+    toast.success("Project deleted");
+  };
+
+  const totalTasks = 0;
 
   return (
     <div className="min-h-screen bg-slate-900">
-      <nav className="bg-slate-800 border-b border-slate-700 px-4 sm:px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-lg sm:text-xl font-bold text-primary-400">
-            DevCollab
-          </h1>
-          <div className="hidden sm:flex items-center gap-4">
-            <span className="text-slate-300 text-sm">
-              Welcome, {user?.name}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="text-sm bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg transition"
-            >
-              Logout
-            </button>
-          </div>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="sm:hidden text-slate-300"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {menuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
-        </div>
-        {menuOpen && (
-          <div className="sm:hidden mt-3 pt-3 border-t border-slate-700 flex flex-col gap-3 px-1">
-            <span className="text-slate-300 text-sm">
-              Welcome, {user?.name}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="text-sm bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-left"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </nav>
+      <Navbar title="DevCollab" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-8">
@@ -84,7 +41,9 @@ const Dashboard = () => {
               My Projects
             </h2>
             <p className="text-slate-400 text-sm mt-1">
-              {projects.length} project{projects.length !== 1 ? "s" : ""}
+              {loading
+                ? "Loading..."
+                : `${projects.length} project${projects.length !== 1 ? "s" : ""}`}
             </p>
           </div>
           <button
@@ -96,9 +55,46 @@ const Dashboard = () => {
           </button>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          {loading ? (
+            <>
+              <DashboardStatSkeleton />
+              <DashboardStatSkeleton />
+              <DashboardStatSkeleton />
+            </>
+          ) : (
+            <>
+              <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 sm:p-6">
+                <p className="text-slate-400 text-xs sm:text-sm mb-1">
+                  Total Projects
+                </p>
+                <p className="text-3xl font-bold text-white">
+                  {projects.length}
+                </p>
+              </div>
+              <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 sm:p-6">
+                <p className="text-slate-400 text-xs sm:text-sm mb-1">
+                  Tasks Completed
+                </p>
+                <p className="text-3xl font-bold text-white">0</p>
+              </div>
+              <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 sm:p-6">
+                <p className="text-slate-400 text-xs sm:text-sm mb-1">
+                  Collaborators
+                </p>
+                <p className="text-3xl font-bold text-white">
+                  {projects.reduce((acc, p) => acc + p.members.length, 0)}
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {[...Array(3)].map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
           </div>
         ) : projects.length === 0 ? (
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-10 text-center">
@@ -136,22 +132,18 @@ const Dashboard = () => {
               <div
                 key={project._id}
                 onClick={() => navigate(`/project/${project._id}`)}
-                className="bg-slate-800 border border-slate-700 rounded-xl p-5 cursor-pointer hover:border-slate-500 transition group"
+                className="bg-slate-800 border border-slate-700 rounded-xl p-5 cursor-pointer hover:border-slate-500 hover:shadow-lg hover:shadow-black/20 transition group"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg"
                     style={{ backgroundColor: project.color }}
                   >
                     {project.name.charAt(0).toUpperCase()}
                   </div>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (window.confirm("Delete this project?"))
-                        deleteProject(project._id);
-                    }}
-                    className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"
+                    onClick={(e) => handleDelete(project._id, e)}
+                    className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition p-1 rounded"
                   >
                     <svg
                       className="w-4 h-4"
@@ -178,10 +170,22 @@ const Dashboard = () => {
                   <span className="text-slate-500 text-xs">
                     {new Date(project.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="text-slate-500 text-xs">
-                    {project.members.length} member
-                    {project.members.length !== 1 ? "s" : ""}
-                  </span>
+                  <div className="flex -space-x-1">
+                    {project.members.slice(0, 3).map((member, i) => (
+                      <div
+                        key={i}
+                        className="w-6 h-6 rounded-full bg-primary-600 border-2 border-slate-800 flex items-center justify-center text-white text-xs font-bold"
+                        title={member.user?.name}
+                      >
+                        {member.user?.name?.charAt(0).toUpperCase() || "?"}
+                      </div>
+                    ))}
+                    {project.members.length > 3 && (
+                      <div className="w-6 h-6 rounded-full bg-slate-600 border-2 border-slate-800 flex items-center justify-center text-white text-xs">
+                        +{project.members.length - 3}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -192,7 +196,7 @@ const Dashboard = () => {
       {showModal && (
         <CreateProjectModal
           onClose={() => setShowModal(false)}
-          onCreate={createProject}
+          onCreate={handleCreate}
         />
       )}
     </div>
