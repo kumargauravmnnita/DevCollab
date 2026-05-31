@@ -3,6 +3,7 @@
 A real-time collaborative development platform with AI-powered tools built with the MERN stack.
 
 🔗 **Live Demo:** https://dev-collab-green.vercel.app/
+
 🔧 **Backend API:** https://devcollab-a2s0.onrender.com
 
 ---
@@ -69,59 +70,90 @@ A real-time collaborative development platform with AI-powered tools built with 
 ## 📁 Project Structure
 
 devcollab/
-├── frontend/ # React + Vite
-│ ├── src/
-│ │ ├── components/ # Reusable UI components
-│ │ │ ├── AIPanel.jsx
-│ │ │ ├── AITaskGenerator.jsx
-│ │ │ ├── ActivityFeed.jsx
-│ │ │ ├── CreateProjectModal.jsx
-│ │ │ ├── CreateTaskModal.jsx
-│ │ │ ├── MembersPanel.jsx
-│ │ │ ├── Navbar.jsx
-│ │ │ ├── PrivateRoute.jsx
-│ │ │ ├── Skeleton.jsx
-│ │ │ └── Toast.jsx
-│ │ ├── context/ # React context
-│ │ │ ├── AuthContext.jsx
-│ │ │ └── ThemeContext.jsx
-│ │ ├── hooks/ # Custom hooks
-│ │ │ ├── useProjects.js
-│ │ │ ├── useSocket.js
-│ │ │ └── useTasks.js
-│ │ ├── pages/ # Route pages
-│ │ │ ├── CodeEditor.jsx
-│ │ │ ├── Dashboard.jsx
-│ │ │ ├── Login.jsx
-│ │ │ ├── Profile.jsx
-│ │ │ ├── ProjectBoard.jsx
-│ │ │ └── Register.jsx
-│ │ └── utils/
-│ │ ├── api.js
-│ │ └── codeRunner.js
-└── backend/ # Node + Express
-├── config/
-│ └── db.js
-├── controllers/
-│ ├── activityController.js
-│ ├── aiController.js
-│ ├── authController.js
-│ ├── memberController.js
-│ ├── projectController.js
-│ ├── taskController.js
-│ └── userController.js
-├── middleware/
-│ └── authMiddleware.js
-├── models/
-│ ├── Activity.js
-│ ├── Project.js
-│ ├── Task.js
-│ └── User.js
-└── routes/
-├── aiRoutes.js
-├── authRoutes.js
-├── projectRoutes.js
-└── userRoutes.js
+├── .gitignore
+├── README.md
+│
+├── backend/
+│ ├── .env
+│ ├── .env.example
+│ ├── package.json
+│ ├── index.js
+│ ├── seed.js
+│ │
+│ ├── config/
+│ │ └── db.js
+│ │
+│ ├── controllers/
+│ │ ├── activityController.js
+│ │ ├── aiController.js
+│ │ ├── authController.js
+│ │ ├── memberController.js
+│ │ ├── projectController.js
+│ │ ├── taskController.js
+│ │ └── userController.js
+│ │
+│ ├── middleware/
+│ │ └── authMiddleware.js
+│ │
+│ ├── models/
+│ │ ├── Activity.js
+│ │ ├── Project.js
+│ │ ├── Task.js
+│ │ └── User.js
+│ │
+│ └── routes/
+│ ├── aiRoutes.js
+│ ├── authRoutes.js
+│ ├── projectRoutes.js
+│ └── userRoutes.js
+│
+└── frontend/
+├── .env
+├── .env.example
+├── index.html
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── vite.config.js
+├── vercel.json
+│
+└── src/
+├── App.jsx
+├── main.jsx
+├── index.css
+│
+├── components/
+│ ├── AIPanel.jsx
+│ ├── AITaskGenerator.jsx
+│ ├── ActivityFeed.jsx
+│ ├── CreateProjectModal.jsx
+│ ├── CreateTaskModal.jsx
+│ ├── MembersPanel.jsx
+│ ├── Navbar.jsx
+│ ├── PrivateRoute.jsx
+│ ├── Skeleton.jsx
+│ └── Toast.jsx
+│
+├── context/
+│ ├── AuthContext.jsx
+│ └── ThemeContext.jsx
+│
+├── hooks/
+│ ├── useProjects.js
+│ ├── useSocket.js
+│ └── useTasks.js
+│
+├── pages/
+│ ├── CodeEditor.jsx
+│ ├── Dashboard.jsx
+│ ├── Login.jsx
+│ ├── Profile.jsx
+│ ├── ProjectBoard.jsx
+│ └── Register.jsx
+│
+└── utils/
+├── api.js
+└── codeRunner.js
 
 ---
 
@@ -150,16 +182,16 @@ npm install
 
 Create `backend/.env`:
 PORT=5000
+
 MONGO_URI=your_mongodb_connection_string
+
 JWT_SECRET=your_jwt_secret_key
+
 GROQ_API_KEY=your_groq_api_key
+
 FRONTEND_URL=http://localhost:5173
 
-### Frontend setup
-
 ```bash
-cd backend
-npm install
 npm run dev
 ```
 
@@ -184,21 +216,31 @@ npm run dev
 ## 📸 Screenshots
 
 > Dashboard — manage all your projects at a glance
+
 > ![Dashboard Screenshot](frontend/public/Dashboard.png)
+
 > Kanban Board — drag and drop tasks with real-time sync
+
 > ![Kanban Board Screenshot](frontend/public/Kanban%20Board.png)
+
 > AI Task Generator — describe your project, get tasks instantly
+
 > ![AI Task Generator Screenshot](frontend/public/AI%20Task%20Generator.png)
+
 > Code Editor — Monaco editor with AI review panel
+
 > ![Code Editor Screenshot](frontend/public/Monaco%20Editor.png)
 
 > AI Code Reviewer - Review your code
+
 > ![AI Code Reviewer Screenshot](frontend/public/AI%20Code%20Reviewer.png)
 
 > Activity Feed
+
 > ![Activity Feed Screenshot](frontend/public/Activity%20Feed.png)
 
 > Invite Team Members
+
 > ![Invite Team Members Screenshot](frontend/public/Invite%20Team%20Members.png)
 
 ## 🤝 Contributing
