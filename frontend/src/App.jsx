@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ProjectBoard from "./pages/ProjectBoard";
 import CodeEditor from "./pages/CodeEditor";
 import PrivateRoute from "./components/PrivateRoute";
+import Profile from "./pages/Profile";
 
 function Home() {
   const { user } = useAuth();
@@ -103,6 +104,14 @@ export default function App() {
         element={
           <PrivateRoute>
             <CodeEditor />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />
