@@ -7,8 +7,8 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const aiRoutes = require("./routes/aiRoutes");
-dotenv.config();
-console.log("ENV TEST:", process.env.GROQ_API_KEY);
+const userRoutes = require("./routes/userRoutes");
+
 dotenv.config();
 connectDB();
 
@@ -32,18 +32,17 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/user", userRoutes);
 
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
   socket.on("join-project", (projectId) => {
     socket.join(projectId);
-    console.log(`Socket ${socket.id} joined project ${projectId}`);
   });
 
   socket.on("leave-project", (projectId) => {
     socket.leave(projectId);
-    console.log(`Socket ${socket.id} left project ${projectId}`);
   });
 
   socket.on("task-created", ({ projectId, task }) => {
