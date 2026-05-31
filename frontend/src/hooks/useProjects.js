@@ -10,9 +10,10 @@ export const useProjects = () => {
     try {
       setLoading(true);
       const { data } = await axios.get("/api/projects");
-      setProjects(data);
+      setProjects(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch projects");
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -35,6 +36,7 @@ export const useProjects = () => {
 
   useEffect(() => {
     fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

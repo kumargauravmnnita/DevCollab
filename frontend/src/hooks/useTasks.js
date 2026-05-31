@@ -9,9 +9,10 @@ export const useTasks = (projectId, socketRef) => {
     try {
       setLoading(true);
       const { data } = await axios.get(`/api/projects/${projectId}/tasks`);
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -24,7 +25,6 @@ export const useTasks = (projectId, socketRef) => {
       priority,
     });
     setTasks((prev) => [data, ...prev]);
-
     if (socketRef?.current) {
       socketRef.current.emit("task-created", { projectId, task: data });
     }
@@ -37,7 +37,6 @@ export const useTasks = (projectId, socketRef) => {
       updates,
     );
     setTasks((prev) => prev.map((t) => (t._id === taskId ? data : t)));
-
     if (socketRef?.current) {
       socketRef.current.emit("task-updated", { projectId, task: data });
     }
@@ -47,7 +46,6 @@ export const useTasks = (projectId, socketRef) => {
   const deleteTask = async (taskId) => {
     await axios.delete(`/api/projects/${projectId}/tasks/${taskId}`);
     setTasks((prev) => prev.filter((t) => t._id !== taskId));
-
     if (socketRef?.current) {
       socketRef.current.emit("task-deleted", { projectId, taskId });
     }
@@ -87,6 +85,7 @@ export const useTasks = (projectId, socketRef) => {
       socket.off("task-updated");
       socket.off("task-deleted");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, socketRef?.current]);
 
   return { tasks, setTasks, loading, createTask, updateTask, deleteTask };
