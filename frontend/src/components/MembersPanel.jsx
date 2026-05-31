@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 const ROLE_COLORS = {
   owner: "bg-purple-500/20 text-purple-400",
@@ -19,7 +19,7 @@ const MembersPanel = ({ projectId, onClose }) => {
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/projects/${projectId}/members`);
+      const { data } = await api.get(`/api/projects/${projectId}/members`);
       setMembers(data);
     } catch (err) {
       setError("Failed to load members");
@@ -39,7 +39,7 @@ const MembersPanel = ({ projectId, onClose }) => {
     setError("");
     setSuccess("");
     try {
-      await axios.post(`/api/projects/${projectId}/members/invite`, {
+      await api.post(`/api/projects/${projectId}/members/invite`, {
         email,
         role,
       });
@@ -56,7 +56,7 @@ const MembersPanel = ({ projectId, onClose }) => {
   const handleRemove = async (memberId) => {
     if (!window.confirm("Remove this member?")) return;
     try {
-      await axios.delete(`/api/projects/${projectId}/members/${memberId}`);
+      await api.delete(`/api/projects/${projectId}/members/${memberId}`);
       setMembers((prev) => prev.filter((m) => m.user._id !== memberId));
     } catch (err) {
       setError(err.response?.data?.message || "Failed to remove member");

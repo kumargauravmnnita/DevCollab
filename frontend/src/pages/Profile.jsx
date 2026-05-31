@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -40,7 +40,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get("/api/auth/me");
+        const { data } = await api.get("/api/auth/me");
         setName(data.name || "");
         setBio(data.bio || "");
         setSkills(data.skills || []);
@@ -52,7 +52,7 @@ const Profile = () => {
     const fetchStats = async () => {
       try {
         setStatsLoading(true);
-        const { data } = await axios.get("/api/user/stats");
+        const { data } = await api.get("/api/user/stats");
         setStats(data);
       } catch (err) {
         console.error(err);
@@ -70,7 +70,7 @@ const Profile = () => {
     if (!name.trim()) return toast.error("Name is required");
     setSaving(true);
     try {
-      await axios.put("/api/user/profile", { name, bio, skills });
+      await api.put("/api/user/profile", { name, bio, skills });
       toast.success("Profile updated!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update profile");
@@ -86,7 +86,7 @@ const Profile = () => {
       return toast.error("New password must be at least 6 characters");
     setChangingPassword(true);
     try {
-      await axios.put("/api/user/change-password", {
+      await api.put("/api/user/change-password", {
         currentPassword,
         newPassword,
       });

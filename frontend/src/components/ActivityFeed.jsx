@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 const TYPE_ICONS = {
   task: "📋",
@@ -23,9 +23,7 @@ const ActivityFeed = ({ projectId, onClose }) => {
     const fetchActivities = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          `/api/projects/${projectId}/activities`,
-        );
+        const { data } = await api.get(`/api/projects/${projectId}/activities`);
         setActivities(data);
       } catch (err) {
         console.error(err);

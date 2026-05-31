@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 const AITaskGenerator = ({ onClose, onTasksGenerated }) => {
   const [description, setDescription] = useState("");
@@ -13,7 +13,7 @@ const AITaskGenerator = ({ onClose, onTasksGenerated }) => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await axios.post("/api/ai/generate-tasks", {
+      const { data } = await api.post("/api/ai/generate-tasks", {
         projectDescription: description,
       });
       setPreview(data.tasks);

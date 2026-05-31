@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 const AIPanel = ({ code, language, onClose }) => {
   const [activeTab, setActiveTab] = useState("review");
@@ -11,7 +11,7 @@ const AIPanel = ({ code, language, onClose }) => {
     setLoading(true);
     setResult("");
     try {
-      const { data } = await axios.post("/api/ai/review", { code, language });
+      const { data } = await api.post("/api/ai/review", { code, language });
       setResult(data.review);
     } catch (err) {
       setResult("Error: " + (err.response?.data?.message || err.message));
@@ -25,7 +25,7 @@ const AIPanel = ({ code, language, onClose }) => {
     setLoading(true);
     setResult("");
     try {
-      const { data } = await axios.post("/api/ai/explain", { code, language });
+      const { data } = await api.post("/api/ai/explain", { code, language });
       setResult(data.explanation);
     } catch (err) {
       setResult("Error: " + (err.response?.data?.message || err.message));
@@ -89,7 +89,6 @@ const AIPanel = ({ code, language, onClose }) => {
               : "Click 'Explain Code' to get a simple explanation of what your code does."}
           </div>
         )}
-
         {loading && (
           <div className="flex items-center gap-2 mt-3">
             <div className="w-3 h-3 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>

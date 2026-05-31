@@ -11,12 +11,21 @@ export const useSocket = () => {
       socketInstance = io(
         import.meta.env.VITE_SOCKET_URL || "http://localhost:5000",
         {
-          transports: ["websocket"],
+          transports: ["polling", "websocket"],
           reconnection: true,
           reconnectionAttempts: 5,
-          reconnectionDelay: 1000,
+          reconnectionDelay: 2000,
+          timeout: 10000,
         },
       );
+
+      socketInstance.on("connect", () => {
+        console.log("Socket connected:", socketInstance.id);
+      });
+
+      socketInstance.on("connect_error", (err) => {
+        console.log("Socket connection error:", err.message);
+      });
     }
     socketRef.current = socketInstance;
 
